@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Omar's Exam 2 Modified</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+	 crossorigin="anonymous">
+	<style>
+        .template {
+			display: none;
+		}
+		.badgeTemplate {
+			display: none;
+		}
+	</style>
+
+</head>
+
+<body>
+  <div id="badges"></div>
+  <div id="cards"></div>
+    
+    
+  <li class="badgeTemplate badge-title list-group-item d-flex justify-content-between align-items-center">
+	<h5 class="badge-title"></h5>
+    <span class="badge-count badge badge-primary badge-pill"></span>
+  </li>
+
+  <div class="card template" style="width: 18rem;">
+    <div class="card-body">
+		<h5 class="card-title">Card title</h5>
+        <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+		<h6 class="card-subtitle2 mb-2 text-muted">Card subtitle</h6>
+	</div>
+  </div>
+    
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+  <script>
+	$(document).ready(function(){
+
+    var newURL = "https://data.cityofchicago.org/resource/xzkq-xp2w.json?$select=department,count(department)&$group=department&$order=department";
+            
+        $.get(newURL, function(response) {
+            console.log(response);
+            $.each(response, function(i,v){
+                var clone = $(".badgeTemplate").clone();
+                // update values
+                clone.find(".badge-title").text(v.department);
+                clone.find(".badge-count").text(v.count_department);
+                clone.removeClass("badgeTemplate")
+
+                // insert into DOM
+                $("#badges").append(clone);
+                    
+                clone.click(function() {
+                   var endpoint = "https://data.cityofchicago.org/resource/xzkq-xp2w.json?department=";
+                   
+                   $("#cards").empty();
+                    
+                   var searchString = clone.find(".badge-title").text();
+                   console.log(searchString);
+                    
+                    if(searchString.includes("&"))
+                        searchString = searchString.replace("&", "%26");
+                    
+                   var url = endpoint + searchString;
+                   
+                    $.get(url, function(response) {
+                    console.log(response);
+            
+                    $.each(response, function(i,v){
+                    var clone2 = $(".template").clone();
+                    // update values
+                    clone2.find(".card-title").text(v.name);
+                    clone2.find(".card-subtitle").text(v.department);
+                    clone2.find(".card-subtitle2").text(v.job_titles);
+
+                    clone2.removeClass("template")
+
+                    // insert into DOM
+                    $("#cards").append(clone2);
+                    });
+                   });
+                });
+            });
+        });
+    });
+
+	</script>
+
+
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+	 crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+	 crossorigin="anonymous"></script>
+</body>
+</html>
